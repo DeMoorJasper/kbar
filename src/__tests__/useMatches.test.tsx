@@ -7,7 +7,7 @@ import { KBarProvider } from "../KBarContextProvider";
 import { render, fireEvent, RenderResult } from "@testing-library/react";
 import * as React from "react";
 import { createAction, Priority } from "../utils";
-import { useMatches } from "../useMatches";
+import { useMatches } from "../matcher/useMatches";
 
 jest.mock("../utils", () => {
   return {

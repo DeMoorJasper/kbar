@@ -1,7 +1,7 @@
 import { createAction, Priority } from "./utils";
 export { createAction, Priority };
 
-export * from "./useMatches";
+export * from "./matcher/useMatches";
 export * from "./KBarPortal";
 export * from "./KBarPositioner";
 export * from "./KBarSearch";

@@ -1,8 +1,8 @@
 import * as React from "react";
-import type { ActionImpl } from "./action/ActionImpl";
-import { useKBar } from "./useKBar";
-import { Priority, useThrottledValue } from "./utils";
-import commandScore from "command-score";
+import type { ActionImpl } from "../action/ActionImpl";
+import { useKBar } from "../useKBar";
+import { Priority, useThrottledValue } from "../utils";
+import commandScore from "@superhuman/command-score";
 
 export const NO_GROUP = {
   name: "none",
@@ -187,6 +187,7 @@ function useInternalMatches(filtered: ActionImpl[], search: string) {
 
     let matches: Match[] = [];
 
+    const start = Date.now();
     for (let i = 0; i < throttledFiltered.length; i++) {
       const action = throttledFiltered[i];
       const score = commandScore(
@@ -197,8 +198,10 @@ function useInternalMatches(filtered: ActionImpl[], search: string) {
         matches.push({ score, action });
       }
     }
+    const duration = Date.now() - start;
+    console.log("Search took", duration, "ms");
 
-    return matches;
+    return matches.sort((a, b) => b.score - a.score).slice(0, 50);
   }, [throttledFiltered, throttledSearch]) as Match[];
 }
 

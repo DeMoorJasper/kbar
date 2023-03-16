@@ -20,7 +20,6 @@ import {
   createAction,
   useMatches,
   ActionImpl,
-  useKBar,
 } from "../../src";
 import useThemeActions from "./hooks/useThemeActions";
 
@@ -52,52 +51,66 @@ const groupNameStyle = {
   opacity: 0.5,
 };
 
+const GENERATED_ACTIONS = new Array(50_000).fill("").map((_, idx) => {
+  return {
+    id: `random-${idx}`,
+    name: `blabla ${idx}`,
+    section: "Navigation",
+    perform: () => {},
+    icon: <HomeIcon />,
+  };
+});
+
 const App = () => {
   useAnalytics();
   const history = useHistory();
-  const initialActions = [
-    {
-      id: "homeAction",
-      name: "Home",
-      shortcut: ["h"],
-      keywords: "back",
-      section: "Navigation",
-      perform: () => history.push("/"),
-      icon: <HomeIcon />,
-      subtitle: "Subtitles can help add more context.",
-    },
-    {
-      id: "docsAction",
-      name: "Docs",
-      shortcut: ["g", "d"],
-      keywords: "help",
-      section: "Navigation",
-      perform: () => history.push("/docs"),
-    },
-    {
-      id: "contactAction",
-      name: "Contact",
-      shortcut: ["c"],
-      keywords: "email hello",
-      section: "Navigation",
-      perform: () => window.open("mailto:timchang@hey.com", "_blank"),
-    },
-    {
-      id: "twitterAction",
-      name: "Twitter",
-      shortcut: ["g", "t"],
-      keywords: "social contact dm",
-      section: "Navigation",
-      perform: () => window.open("https://twitter.com/timcchang", "_blank"),
-    },
-    createAction({
-      name: "Github",
-      shortcut: ["g", "h"],
-      keywords: "sourcecode",
-      section: "Navigation",
-      perform: () => window.open("https://github.com/timc1/kbar", "_blank"),
-    }),
-  ];
+  const initialActions = React.useMemo(
+    () => [
+      {
+        id: "homeAction",
+        name: "Home",
+        shortcut: ["h"],
+        keywords: "back",
+        section: "Navigation",
+        perform: () => history.push("/"),
+        icon: <HomeIcon />,
+        subtitle: "Subtitles can help add more context.",
+      },
+      {
+        id: "docsAction",
+        name: "Docs",
+        shortcut: ["g", "d"],
+        keywords: "help",
+        section: "Navigation",
+        perform: () => history.push("/docs"),
+      },
+      {
+        id: "contactAction",
+        name: "Contact",
+        shortcut: ["c"],
+        keywords: "email hello",
+        section: "Navigation",
+        perform: () => window.open("mailto:timchang@hey.com", "_blank"),
+      },
+      {
+        id: "twitterAction",
+        name: "Twitter",
+        shortcut: ["g", "t"],
+        keywords: "social contact dm",
+        section: "Navigation",
+        perform: () => window.open("https://twitter.com/timcchang", "_blank"),
+      },
+      createAction({
+        name: "Github",
+        shortcut: ["g", "h"],
+        keywords: "sourcecode",
+        section: "Navigation",
+        perform: () => window.open("https://github.com/timc1/kbar", "_blank"),
+      }),
+      ...GENERATED_ACTIONS,
+    ],
+    [history]
+  );
 
   return (
     <KBarProvider
