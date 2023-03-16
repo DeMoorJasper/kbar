@@ -2,6 +2,7 @@ import * as React from "react";
 import type { ActionImpl } from "../action/ActionImpl";
 import { useKBar } from "../useKBar";
 import { Priority, useThrottledValue } from "../utils";
+import { MATCH_LIMIT } from "./constants";
 import { MatchWorkerController } from "./controller";
 
 export const NO_GROUP = {
@@ -188,7 +189,11 @@ function useInternalMatches(filtered: ActionImpl[], search: string) {
     const reqId = reqRef.current + 1;
     reqRef.current = reqId;
     if (throttledSearch.trim() === "" || !matchWorker) {
-      setMatches(throttledFiltered.map((action) => ({ score: 0, action })));
+      setMatches(
+        throttledFiltered
+          .map((action) => ({ score: 0, action }))
+          .slice(0, MATCH_LIMIT)
+      );
     } else {
       matchWorker
         .requestMatches(

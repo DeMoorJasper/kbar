@@ -1,6 +1,7 @@
 /* eslint-disable no-restricted-globals */
 
 import commandScore from "@superhuman/command-score";
+import { MATCH_LIMIT } from "./constants";
 
 let lastQueryId = 0;
 self.onmessage = (evt: MessageEvent<string>) => {
@@ -31,7 +32,7 @@ self.onmessage = (evt: MessageEvent<string>) => {
 
     self.postMessage({
       idx: requestIdx,
-      result: matches.sort((a, b) => b.score - a.score).slice(0, 100),
+      result: matches.sort((a, b) => b.score - a.score).slice(0, MATCH_LIMIT),
     });
   }
 };
