@@ -168,7 +168,8 @@ type Match = {
   score: number;
 };
 
-const matchWorker = new MatchWorkerController();
+const matchWorker =
+  typeof window !== "undefined" ? new MatchWorkerController() : null;
 function useInternalMatches(filtered: ActionImpl[], search: string) {
   const value = React.useMemo(
     () => ({
@@ -186,7 +187,7 @@ function useInternalMatches(filtered: ActionImpl[], search: string) {
   React.useEffect(() => {
     const reqId = reqRef.current + 1;
     reqRef.current = reqId;
-    if (throttledSearch.trim() === "") {
+    if (throttledSearch.trim() === "" || !matchWorker) {
       setMatches(throttledFiltered.map((action) => ({ score: 0, action })));
     } else {
       matchWorker
