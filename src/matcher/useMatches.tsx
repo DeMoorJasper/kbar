@@ -168,8 +168,8 @@ type Match = {
   score: number;
 };
 
+const matchWorker = new MatchWorkerController();
 function useInternalMatches(filtered: ActionImpl[], search: string) {
-  const [matchWorker] = React.useState(() => new MatchWorkerController());
   const value = React.useMemo(
     () => ({
       filtered,
@@ -207,7 +207,7 @@ function useInternalMatches(filtered: ActionImpl[], search: string) {
           }
         });
     }
-  }, [throttledFiltered, throttledSearch, matchWorker]);
+  }, [throttledFiltered, throttledSearch]);
 
   return matches;
 }

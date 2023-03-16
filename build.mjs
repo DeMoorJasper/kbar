@@ -9,7 +9,7 @@ async function run() {
     sourcemap: true,
     target: "es2017",
     outdir: "lib",
-    format: "esm",
+    format: "cjs",
     plugins: [inlineWorkerPlugin()],
     external: [
       "react",
