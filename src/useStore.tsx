@@ -24,14 +24,11 @@ export function useStore(props: useStoreProps) {
     ...props.options,
   } as KBarOptions);
 
-  const actionsInterface = React.useMemo(
-    () =>
-      new ActionInterface(props.actions || [], {
-        historyManager: optionsRef.current.enableHistory ? history : undefined,
-      }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  const [actionsInterface] = React.useState(() => {
+    return new ActionInterface(props.actions || [], {
+      historyManager: optionsRef.current.enableHistory ? history : undefined,
+    });
+  });
 
   const stateRef = React.useRef<KBarState>({
     searchQuery: "",
@@ -42,7 +39,7 @@ export function useStore(props: useStoreProps) {
   });
 
   const getState = React.useCallback(() => stateRef.current, []);
-  const publisher = React.useMemo(() => new Publisher(getState), [getState]);
+  const [publisher] = React.useState(() => new Publisher(getState));
 
   const setState = React.useCallback(
     (update: UpdateStateFn): void => {
