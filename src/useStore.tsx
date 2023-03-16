@@ -121,7 +121,7 @@ export function useStore(props: useStoreProps) {
         },
       },
       options: optionsRef.current,
-      subscribe: (collector, cb) => publisher.subscribe(collector, cb),
+      subscribe: (collector, cb, debugName) => publisher.subscribe(collector, cb, debugName),
     } as IKBarContext;
   }, [getState, publisher, registerActions, setState]);
 }
@@ -136,11 +136,13 @@ class Publisher {
 
   subscribe<C>(
     collector: (state: KBarState) => C,
-    onChange: (collected: C) => void
+    onChange: (collected: C) => void,
+    debugName: string
   ) {
     const subscriber = new Subscriber(
       () => collector(this.getState()),
-      onChange
+      onChange,
+      debugName
     );
     this.subscribers.push(subscriber);
     return this.unsubscribe.bind(this, subscriber);
@@ -165,7 +167,11 @@ class Subscriber {
   collector;
   onChange;
 
-  constructor(collector: () => any, onChange: (collected: any) => any) {
+  constructor(
+    collector: () => any,
+    onChange: (collected: any) => any,
+    private debugName: string
+  ) {
     this.collector = collector;
     this.onChange = onChange;
   }
@@ -175,6 +181,13 @@ class Subscriber {
       // grab latest state
       const recollect = this.collector();
       if (!deepEqual(recollect, this.collected)) {
+        if (this.debugName) {
+          console.log(`KBar subscriber ${this.debugName} called`, {
+            old: this.collected,
+            new: recollect,
+          });
+        }
+
         this.collected = recollect;
         if (this.onChange) {
           this.onChange(this.collected);

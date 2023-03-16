@@ -20,6 +20,7 @@ import {
   createAction,
   useMatches,
   ActionImpl,
+  useKBar,
 } from "../../src";
 import useThemeActions from "./hooks/useThemeActions";
 
@@ -102,6 +103,7 @@ const App = () => {
     <KBarProvider
       options={{
         enableHistory: true,
+        debug: true,
       }}
       actions={initialActions}
     >
@@ -134,6 +136,7 @@ const App = () => {
 function CommandBar() {
   useDocsActions();
   useThemeActions();
+
   return (
     <KBarPortal>
       <KBarPositioner>

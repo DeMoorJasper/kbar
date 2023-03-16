@@ -8,6 +8,7 @@ export * from "./KBarSearch";
 export * from "./KBarResults";
 export * from "./useKBar";
 export * from "./useRegisterActions";
+export * from "./useKBarContext";
 export * from "./KBarContextProvider";
 export * from "./KBarAnimator";
 export * from "./types";

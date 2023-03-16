@@ -1,12 +1,12 @@
 import * as React from "react";
 import type { Action } from "./types";
-import { useKBar } from "./useKBar";
+import { useKBarContext } from "./useKBarContext";
 
 export function useRegisterActions(
   actions: Action[],
   dependencies: React.DependencyList = []
 ) {
-  const { query } = useKBar();
+  const { query } = useKBarContext();
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const actionsCache = React.useMemo(() => actions, dependencies);

@@ -67,6 +67,7 @@ export interface KBarOptions {
    * kbar. Defaults to "$mod+k" (cmd+k / ctrl+k)
    */
   toggleShortcut?: string;
+  debug?: boolean;
 }
 
 export interface KBarProviderProps {
@@ -100,7 +101,8 @@ export interface IKBarContext {
   query: KBarQuery;
   subscribe: (
     collector: <C>(state: KBarState) => C,
-    cb: <C>(collected: C) => void
+    cb: <C>(collected: C) => void,
+    debugName: string
   ) => void;
   options: KBarOptions;
 }

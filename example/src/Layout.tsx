@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useKBar } from "../../src";
+import { useKBar, useKBarContext } from "../../src";
 import styles from "./Layout.module.scss";
 import Logo from "./Logo";
 
@@ -8,7 +8,10 @@ interface Props {
 }
 
 export default function Layout(props: Props) {
-  const { query } = useKBar();
+  const { query } = useKBarContext();
+
+  useKBar(() => ({}), "Layout");
+
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
