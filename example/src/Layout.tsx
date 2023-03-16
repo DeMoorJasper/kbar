@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useKBar, useKBarContext } from "../../src";
+import { useKBar, useKBarContext } from "../..";
 import styles from "./Layout.module.scss";
 import Logo from "./Logo";
 

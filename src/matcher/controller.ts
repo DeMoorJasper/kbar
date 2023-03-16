@@ -1,3 +1,6 @@
+// @ts-ignore
+import MatchWorker from './matcher.worker';
+
 export interface IWorkerMatch {
   score: number;
   idx: number;
@@ -12,7 +15,7 @@ export class MatchWorkerController {
   private lastIdx = 0;
 
   constructor() {
-    this.worker = new Worker("worker.js");
+    this.worker = MatchWorker();
     this.worker.onmessage = (evt: MessageEvent<string>) => {
       const data = evt.data;
       if (typeof data === "object") {

@@ -1,4 +1,5 @@
-const esbuild = require("esbuild");
+import esbuild from "esbuild";
+import inlineWorkerPlugin from "esbuild-plugin-inline-worker";
 
 async function run() {
   const result = await esbuild.build({
@@ -9,6 +10,14 @@ async function run() {
     target: "es2017",
     outdir: "lib",
     format: "esm",
+    plugins: [inlineWorkerPlugin()],
+    external: [
+      "react",
+      "react-dom",
+      "@radix-ui/react-portal",
+      "fast-equals",
+      "react-virtual",
+    ],
   });
 
   result.errors.forEach((error) => {

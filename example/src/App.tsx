@@ -20,7 +20,7 @@ import {
   createAction,
   useMatches,
   ActionImpl,
-} from "../../src";
+} from "../..";
 import useThemeActions from "./hooks/useThemeActions";
 
 const searchStyle = {

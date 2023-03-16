@@ -2,7 +2,7 @@ import * as React from "react";
 import type { ActionImpl } from "../action/ActionImpl";
 import { useKBar } from "../useKBar";
 import { Priority, useThrottledValue } from "../utils";
-import commandScore from "@superhuman/command-score";
+import { MatchWorkerController } from "./controller";
 
 export const NO_GROUP = {
   name: "none",
@@ -169,6 +169,7 @@ type Match = {
 };
 
 function useInternalMatches(filtered: ActionImpl[], search: string) {
+  const [matchWorker] = React.useState(() => new MatchWorkerController());
   const value = React.useMemo(
     () => ({
       filtered,
@@ -179,30 +180,36 @@ function useInternalMatches(filtered: ActionImpl[], search: string) {
 
   const { filtered: throttledFiltered, search: throttledSearch } =
     useThrottledValue(value);
+  const [matches, setMatches] = React.useState<Match[]>([]);
 
-  return React.useMemo(() => {
+  const reqRef = React.useRef(0);
+  React.useEffect(() => {
+    const reqId = reqRef.current + 1;
+    reqRef.current = reqId;
     if (throttledSearch.trim() === "") {
-      return throttledFiltered.map((action) => ({ score: 0, action }));
+      setMatches(throttledFiltered.map((action) => ({ score: 0, action })));
+    } else {
+      matchWorker
+        .requestMatches(
+          throttledSearch,
+          throttledFiltered.map((action) => {
+            return [action.name, action.keywords, action.subtitle].join(" ");
+          })
+        )
+        .then((res) => {
+          if (reqRef.current === reqId) {
+            setMatches(
+              res.map(({ score, idx }) => ({
+                score,
+                action: throttledFiltered[idx],
+              }))
+            );
+          }
+        });
     }
+  }, [throttledFiltered, throttledSearch, matchWorker]);
 
-    let matches: Match[] = [];
-
-    const start = Date.now();
-    for (let i = 0; i < throttledFiltered.length; i++) {
-      const action = throttledFiltered[i];
-      const score = commandScore(
-        [action.name, action.keywords, action.subtitle].join(" "),
-        throttledSearch
-      );
-      if (score > 0) {
-        matches.push({ score, action });
-      }
-    }
-    const duration = Date.now() - start;
-    console.log("Search took", duration, "ms");
-
-    return matches.sort((a, b) => b.score - a.score).slice(0, 50);
-  }, [throttledFiltered, throttledSearch]) as Match[];
+  return matches;
 }
 
 /**

@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useHistory } from "react-router-dom";
-import { Action, useRegisterActions } from "../../../src";
+import { Action, useRegisterActions } from "../../..";
 import data from "../Docs/data";
 
 const searchId = randomId();
