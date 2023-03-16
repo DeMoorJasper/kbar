@@ -3,6 +3,7 @@ import { KBarContext } from "./KBarContextProvider";
 import type { KBarOptions, KBarQuery, KBarState } from "./types";
 
 interface BaseKBarReturnType {
+  getState: () => KBarState;
   query: KBarQuery;
   options: KBarOptions;
 }
@@ -10,6 +11,27 @@ interface BaseKBarReturnType {
 type useKBarReturnType<S = null> = S extends null
   ? BaseKBarReturnType
   : S & BaseKBarReturnType;
+
+function isEqualObj(
+  objA: Record<string, any>,
+  objB: Record<string, any>
+): boolean {
+  if (objA === objB) {
+    return true;
+  }
+
+  if (Object.keys(objA).length !== Object.keys(objB).length) {
+    return false;
+  }
+
+  for (const key in objA) {
+    if (objA[key] !== objB[key]) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 export function useKBar<C = null>(
   collector?: (state: KBarState) => C
@@ -24,8 +46,9 @@ export function useKBar<C = null>(
       ...collected,
       query,
       options,
+      getState,
     }),
-    [query, options]
+    [query, options, getState]
   );
 
   const [render, setRender] = React.useState(onCollect(collected.current));
@@ -35,7 +58,16 @@ export function useKBar<C = null>(
     if (collectorRef.current) {
       unsubscribe = subscribe(
         (current) => (collectorRef.current as any)(current),
-        (collected) => setRender(onCollect(collected))
+        (collected) => {
+          const newState = onCollect(collected);
+          setRender((prev) => {
+            if (isEqualObj(prev, newState)) {
+              return prev;
+            } else {
+              return newState;
+            }
+          });
+        }
       );
     }
     return () => {
