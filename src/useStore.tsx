@@ -13,6 +13,7 @@ import type {
 import { VisualState } from "./types";
 
 type useStoreProps = KBarProviderProps;
+type UpdateStateFn = (state: KBarState) => KBarState;
 
 export function useStore(props: useStoreProps) {
   const optionsRef = React.useRef({
@@ -32,8 +33,7 @@ export function useStore(props: useStoreProps) {
     []
   );
 
-  // TODO: at this point useReducer might be a better approach to managing state.
-  const [state, setState] = React.useState<KBarState>({
+  const stateRef = React.useRef<KBarState>({
     searchQuery: "",
     currentRootActionId: null,
     visualState: VisualState.hidden,
@@ -41,16 +41,16 @@ export function useStore(props: useStoreProps) {
     activeIndex: 0,
   });
 
-  const currState = React.useRef(state);
-  currState.current = state;
-
-  const getState = React.useCallback(() => currState.current, []);
+  const getState = React.useCallback(() => stateRef.current, []);
   const publisher = React.useMemo(() => new Publisher(getState), [getState]);
 
-  React.useEffect(() => {
-    currState.current = state;
-    publisher.notify();
-  }, [state, publisher]);
+  const setState = React.useCallback(
+    (update: UpdateStateFn): void => {
+      stateRef.current = update(stateRef.current);
+      publisher.notify();
+    },
+    [publisher]
+  );
 
   const registerActions = React.useCallback(
     (actions: Action[]) => {
@@ -70,7 +70,7 @@ export function useStore(props: useStoreProps) {
         });
       };
     },
-    [actionsInterface]
+    [setState, actionsInterface]
   );
 
   const inputRef = React.useRef<HTMLInputElement | null>(null);
@@ -126,7 +126,7 @@ export function useStore(props: useStoreProps) {
       options: optionsRef.current,
       subscribe: (collector, cb) => publisher.subscribe(collector, cb),
     } as IKBarContext;
-  }, [getState, publisher, registerActions]);
+  }, [getState, publisher, registerActions, setState]);
 }
 
 class Publisher {
