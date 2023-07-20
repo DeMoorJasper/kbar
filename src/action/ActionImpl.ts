@@ -28,6 +28,7 @@ export class ActionImpl implements Action {
   icon: Action["icon"];
   subtitle: Action["subtitle"];
   parent?: Action["parent"];
+  onSelect?: Action["onSelect"];
   /**
    * @deprecated use action.command.perform
    */
